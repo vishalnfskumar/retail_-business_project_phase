@@ -136,15 +136,15 @@
               <div class="text-sm text-white/90 font-semibold">Key KPI</div>
               <div class="mt-2 flex items-end gap-4">
                 <div>
-                  <div class="text-2xl md:text-3xl font-bold" id="kpiSales">Total Sales</div>
+                  <div class="text-2xl md:text-3xl font-bold" id="kpiSales">Sales</div>
                   <div class="text-xs text-white/80">2,297.2K</div>
                 </div>
                 <div>
-                  <div class="text-2xl md:text-3xl font-bold" id="kpiProfit">Total Profit</div>
+                  <div class="text-2xl md:text-3xl font-bold" id="kpiProfit">Profit</div>
                   <div class="text-xs text-white/80">286.4K</div>
                 </div>
                 <div>
-                  <div class="text-2xl md:text-3xl font-bold" id="kpiMargin"></div>
+                  <div class="text-2xl md:text-3xl font-bold" id="kpiMargin">T.Region</div>
                   <div class="text-xs text-white/80">West</div>
                 </div>
               </div>
@@ -177,15 +177,15 @@
 
        <div class="mt-4 flex flex-wrap gap-3">
   <div class="px-3 py-2 bg-white rounded-lg shadow flex items-center gap-3">
-    <a href="retail_analysis_queries.sql" alt="SQL" class="w-6 h-6"/>
+    <img ="images/sql1.png" alt="SQL" class="w-6 h-6"/>
     <span class="text-sm font-medium">SQL</span>
   </div>
   <div class="px-3 py-2 bg-white rounded-lg shadow flex items-center gap-3">
-    <a href="Retail_analysis.pbix" alt="Power BI" class="w-6 h-6"/>
+    <img ="images/dashboard1.png" alt="Power BI" class="w-6 h-6"/>
     <span class="text-sm font-medium">Power BI</span>
   </div>
   <div class="px-3 py-2 bg-white rounded-lg shadow flex items-center gap-3">
-    <a href="SuperStore_raw_data.csv" alt="Excel" class="w-6 h-6"/>
+    <img ="images/excel.png" alt="Excel" class="w-6 h-6"/>
     <span class="text-sm font-medium">Excel</span>
   </div>
  
@@ -227,7 +227,7 @@
           <div class="flex items-start justify-between">
             <div>
               <h3 class="font-semibold">SQL Queries</h3>
-              <p class="text-sm text-slate-500">Open queries with syntax highlighting, or download the `.sql` file.</p>
+              <p class="text-sm text-slate-500">Open queries with syntax highlighting, or download the .sql file.</p>
             </div>
             <div class="flex gap-2">
               <button onclick="openSqlModal('retail_analysis_queries.sql')" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-eye"></i> View</button>
@@ -275,13 +275,13 @@ ORDER BY total_profit DESC;</code></pre>
 
           <!-- Replace the src with your Power BI embed URL when available -->
           <div class="border rounded overflow-hidden">
-            <iframe id="pbiframe" src="https://app.powerbi.com/view?r=YOUR_EMBED_ID"
-              class="w-full h-[420px]" title="Power BI Dashboard" frameborder="0" allowFullScreen="true" loading="lazy"></iframe>
+            <iframe id="pbiframe" src="about:blank"
+              class="w-full h-[420px]" title="Power BI Dashboard (replace with your embed)" loading="lazy"></iframe>
           </div>
 
           <div class="flex gap-3 mt-4">
             <a href="Retail_analysis.pbix" download class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-download"></i> Download PBIX</a>
-            <button onclick="window.open('https://learn.microsoft.com/power-bi/collaborate-share/service-publish-to-web', '_blank')" class="px-3 py-2 border rounded-lg text-sm">How to embed?</button>
+            <button onclick="alert('Replace the iframe src with your Power BI embed link for inline view.')" class="px-3 py-2 border rounded-lg text-sm">How to embed?</button>
           </div>
         </div>
       </div>
@@ -561,11 +561,11 @@ ORDER BY total_profit DESC;</code></pre>
           if (!r || !r.data || r.data.length === 0) { mini.innerHTML = '<div class="text-sm text-slate-400">No preview available</div>'; return; }
           const keys = r.meta.fields;
           let html = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr>';
-          keys.slice(0,6).forEach(k => html += `<th class="text-left px-2 py-1 text-slate-500">${k}</th>`);
+          keys.slice(0,6).forEach(k => html += <th class="text-left px-2 py-1 text-slate-500">${k}</th>);
           html += '</tr></thead><tbody>';
           r.data.forEach(row => {
             html += '<tr>';
-            keys.slice(0,6).forEach(k => html += `<td class="px-2 py-1">${(row[k]!==undefined? String(row[k]).slice(0,60) : '')}</td>`);
+            keys.slice(0,6).forEach(k => html += <td class="px-2 py-1">${(row[k]!==undefined? String(row[k]).slice(0,60) : '')}</td>);
             html += '</tr>';
           });
           html += '</tbody></table></div>';
@@ -583,7 +583,7 @@ ORDER BY total_profit DESC;</code></pre>
         const res = await fetch(sqlPath);
         if (!res.ok) { throw new Error('Fetch failed'); }
         const text = await res.text();
-        modalContent.innerHTML = `<pre class="language-sql"><code id="modalSqlCode" class="language-sql"></code></pre>`;
+        modalContent.innerHTML = <pre class="language-sql"><code id="modalSqlCode" class="language-sql"></code></pre>;
         const codeEl = document.getElementById('modalSqlCode');
         codeEl.textContent = text;
         Prism.highlightElement(codeEl);
@@ -594,7 +594,7 @@ ORDER BY total_profit DESC;</code></pre>
 
     // PDF preview (iframe inside modal)
     function openPdfModal(pdfPath) {
-      modalContent.innerHTML = `<div style="height:80vh"><iframe src="${pdfPath}" class="w-full h-full" aria-label="PDF Preview"></iframe></div>`;
+      modalContent.innerHTML = <div style="height:80vh"><iframe src="${pdfPath}" class="w-full h-full" aria-label="PDF Preview"></iframe></div>;
       openModal('PDF Preview');
     }
 
@@ -630,10 +630,8 @@ ORDER BY total_profit DESC;</code></pre>
     computeSimpleKpis('all_imp_PART/SuperStore_raw_data.csv');
 
     // Helpful note: when previewing locally (file://) some browsers block fetch for local files.
-    // Use `npx http-server` or GitHub Pages to host the site and enable previews.
+    // Use npx http-server or GitHub Pages to host the site and enable previews.
 
   </script>
 </body>
 </html>
-
-
