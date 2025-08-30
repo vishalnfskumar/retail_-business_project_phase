@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Retail Business Performance & Profitability Analysis — Vishal Kumar</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS (Animate on Scroll) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Prism (SQL syntax highlighting) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+
+  <!-- jQuery (for DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- PapaParse (CSV parsing) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  <!-- Lightbox (image zoom/fullscreen) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <style>
+    :root { --accent: #06b6d4; --accent-2: #2563eb; }
+    html,body { font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; scroll-behavior: smooth; }
+    /* fixed navbar placeholder space */
+    #top-spacer { height: 72px; }
+    /* tiny shadow for sticky nav */
+    .nav-shadow { box-shadow: 0 6px 20px rgba(15,23,42,0.08); backdrop-filter: blur(6px); }
+    /* modal backdrop */
+    .modal-backdrop { background: rgba(2,6,23,0.6); }
+    /* active nav link */
+    .nav-link-active { color: var(--accent-2); font-weight:700; }
+    /* file cards */
+    .file-card { transition: transform .18s ease, box-shadow .18s ease; }
+    .file-card:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(10,10,20,0.08); }
+    /* responsive big hero text */
+    @media (min-width: 768px) {
+      .hero-title { font-size: 3.4rem; line-height: 1.02; }
+      .hero-sub { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+  <!-- NAVBAR (sticky) -->
+  <nav id="mainNav" class="fixed w-full z-40 top-0 left-0">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-400 flex items-center justify-center text-white font-bold">RK</div>
+          <div class="hidden sm:block">
+            <div class="text-sm font-semibold">Retail Analysis</div>
+            <div class="text-xs text-slate-400">Vishal Kumar</div>
+          </div>
+        </a>
+
+        <div class="hidden md:flex items-center gap-8 text-sm">
+          <a class="nav-link hover:underline" href="#about">About</a>
+          <a class="nav-link hover:underline" href="#data-sql">Data & SQL</a>
+          <a class="nav-link hover:underline" href="#dashboard">Dashboard</a>
+          <a class="nav-link hover:underline" href="#report">Report</a>
+          <a class="nav-link hover:underline" href="#insights">Insights</a>
+          <a class="nav-link hover:underline" href="#downloads">Downloads</a>
+          <a class="nav-link hover:underline" href="#contact">Contact</a>
+        </div>
+
+        <!-- mobile menu -->
+        <div class="md:hidden">
+          <button id="mobileToggle" class="p-2 bg-white rounded-lg shadow-sm">
+            <i class="fa fa-bars text-slate-700"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- mobile menu panel -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+      <div class="px-4 py-3 space-y-2">
+        <a class="block" href="#about">About</a>
+        <a class="block" href="#data-sql">Data & SQL</a>
+        <a class="block" href="#dashboard">Dashboard</a>
+        <a class="block" href="#report">Report</a>
+        <a class="block" href="#insights">Insights</a>
+        <a class="block" href="#downloads">Downloads</a>
+        <a class="block" href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- spacer to avoid content hidden by fixed nav -->
+  <div id="top-spacer"></div>
+
+  <!-- HERO -->
+  <header class="relative overflow-hidden">
+    <div class="bg-gradient-to-br from-indigo-700 to-cyan-500 text-white">
+      <div class="max-w-6xl mx-auto px-6 py-28 md:py-36">
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h1 class="hero-title text-3xl md:text-5xl font-extrabold mb-4" id="heroTitle">Retail Business Performance & Profitability Analysis</h1>
+            <p class="hero-sub text-base md:text-lg text-slate-100 mb-6" id="heroSub">SQL · Power BI · Dashboard Insights — Find profit drains, optimize inventory, and reveal seasonal demand.</p>
+
+            <div class="flex gap-3">
+              <a href="#dashboard" class="inline-flex items-center gap-2 bg-white text-indigo-700 px-5 py-3 rounded-full shadow hover:scale-[1.02] transition">
+                <i class="fa-solid fa-chart-line"></i> View Dashboard
+              </a>
+              <a href="#downloads" class="inline-flex items-center gap-2 border border-white/30 text-white px-5 py-3 rounded-full hover:bg-white/10 transition">
+                <i class="fa-solid fa-download"></i> Downloads
+              </a>
+            </div>
+          </div>
+
+          <!-- hero right: small preview cards -->
+          <div class="space-y-4">
+            <div class="bg-white/10 rounded-xl p-5">
+              <div class="text-sm text-white/90 font-semibold">Key KPI</div>
+              <div class="mt-2 flex items-end gap-4">
+                <div>
+                  <div class="text-2xl md:text-3xl font-bold" id="kpiSales">₹ —</div>
+                  <div class="text-xs text-white/80">Total Sales</div>
+                </div>
+                <div>
+                  <div class="text-2xl md:text-3xl font-bold" id="kpiProfit">₹ —</div>
+                  <div class="text-xs text-white/80">Total Profit</div>
+                </div>
+                <div>
+                  <div class="text-2xl md:text-3xl font-bold" id="kpiMargin">— %</div>
+                  <div class="text-xs text-white/80">Profit Margin</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white/10 rounded-xl p-5">
+              <div class="text-sm text-white/90 font-semibold">Top Actions</div>
+              <ul class="mt-2 text-sm text-white/80 space-y-1">
+                <li>• Discount slow-moving SKUs</li>
+                <li>• Bundle low-margin accessories</li>
+                <li>• Reorder high-demand items earlier</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- decorative shapes -->
+      <svg class="absolute right-0 bottom-0 opacity-20" width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <circle cx="210" cy="210" r="210" fill="white"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about" class="max-w-6xl mx-auto px-6 py-16" data-aos="fade-up">
+    <div class="grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <h2 class="text-2xl font-bold mb-3">About The Project</h2>
+        <p class="text-slate-600 mb-4">Objective: Analyze transactional retail data to uncover profit-draining categories, optimize inventory turnover, and identify seasonal product behavior. Tools used: SQL, Power BI, Data cleaning & visualization.</p>
+
+        <div class="mt-4 flex flex-wrap gap-3">
+          <div class="px-3 py-2 bg-white rounded-lg shadow flex items-center gap-3">
+            <img src="all_imp_PART/images/sql.png" alt="SQL" class="w-6 h-6"/>
+            <span class="text-sm font-medium">SQL</span>
+          </div>
+          <div class="px-3 py-2 bg-white rounded-lg shadow flex items-center gap-3">
+            <img src="all_imp_PART/images/powerbi.png" alt="PowerBI" class="w-6 h-6"/>
+            <span class="text-sm font-medium">Power BI</span>
+          </div>
+          <div class="px-3 py-2 bg-white rounded-lg shadow flex items-center gap-3">
+            <img src="all_imp_PART/images/excel.png" alt="Excel" class="w-6 h-6"/>
+            <span class="text-sm font-medium">Excel</span>
+          </div>
+          <div class="px-3 py-2 bg-white rounded-lg shadow flex items-center gap-3">
+            <img src="all_imp_PART/images/tableau.png" alt="Tableau" class="w-6 h-6"/>
+            <span class="text-sm font-medium">Tableau</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-aos="fade-left">
+        <img src="all_imp_PART/images/overview_big.png" alt="Project Overview" class="rounded-xl shadow-lg" />
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA & SQL -->
+  <section id="data-sql" class="bg-slate-50 py-16" data-aos="fade-up">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-2xl font-bold mb-6">Data & SQL</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- CSV card -->
+        <div class="bg-white p-6 rounded-xl file-card">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="font-semibold">Raw Data (CSV)</h3>
+              <p class="text-sm text-slate-500">Open the dataset in-browser — searchable and sortable.</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="openCsvModal('all_imp_PART/SuperStore_raw_data.csv')" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-eye"></i> View</button>
+              <a href="all_imp_PART/SuperStore_raw_data.csv" download class="px-3 py-2 bg-white border rounded-lg text-sm"><i class="fa-solid fa-download"></i> Download</a>
+            </div>
+          </div>
+
+          <div class="mt-4 text-sm text-slate-500">Preview (first 8 rows):</div>
+          <div id="csvPreviewMini" class="mt-3"></div>
+        </div>
+
+        <!-- SQL card -->
+        <div class="bg-white p-6 rounded-xl file-card">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="font-semibold">SQL Queries</h3>
+              <p class="text-sm text-slate-500">Open queries with syntax highlighting, or download the `.sql` file.</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="openSqlModal('all_imp_PART/retail_analysis_queries.sql')" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-eye"></i> View</button>
+              <a href="all_imp_PART/retail_analysis_queries.sql" download class="px-3 py-2 bg-white border rounded-lg text-sm"><i class="fa-solid fa-download"></i> Download</a>
+            </div>
+          </div>
+
+          <div class="mt-4 text-sm text-slate-500">Core query sample:</div>
+          <pre class="mt-3 bg-slate-50 p-3 rounded text-sm"><code class="language-sql">SELECT category, SUM(sales) AS total_sales, SUM(profit) AS total_profit
+FROM SuperStore
+GROUP BY category
+ORDER BY total_profit DESC;</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD & VISUALS -->
+  <section id="dashboard" class="py-16" data-aos="fade-up">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-2xl font-bold mb-6">Dashboard & Visuals</h2>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Big image gallery (lightbox) -->
+        <div>
+          <div class="grid grid-cols-1 gap-4">
+            <a href="all_imp_PART/images/dashboard1.png" data-lightbox="dash" data-title="Dashboard - Sales Overview">
+              <img src="all_imp_PART/images/dashboard1.png" alt="Dashboard 1" class="rounded-xl shadow-lg w-full object-cover h-[420px]" />
+            </a>
+            <div class="grid grid-cols-2 gap-3 mt-3">
+              <a href="all_imp_PART/images/dashboard2.png" data-lightbox="dash" data-title="Dashboard - Category Profitability">
+                <img src="all_imp_PART/images/dashboard2.png" alt="Dashboard 2" class="rounded-lg shadow-sm w-full object-cover h-[160px]"/>
+              </a>
+              <a href="all_imp_PART/images/dashboard3.png" data-lightbox="dash" data-title="Dashboard - Seasonal Trends">
+                <img src="all_imp_PART/images/dashboard3.png" alt="Dashboard 3" class="rounded-lg shadow-sm w-full object-cover h-[160px]"/>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- PowerBI embed placeholder / link -->
+        <div class="bg-white rounded-xl p-6 shadow">
+          <h3 class="font-semibold mb-3">Power BI Embed</h3>
+          <p class="text-sm text-slate-500 mb-4">If you have a Power BI publish/embed link, replace the <code>src</code> below with your iframe embed URL.</p>
+
+          <!-- Replace the src with your Power BI embed URL when available -->
+          <div class="border rounded overflow-hidden">
+            <iframe id="pbiframe" src="about:blank"
+              class="w-full h-[420px]" title="Power BI Dashboard (replace with your embed)" loading="lazy"></iframe>
+          </div>
+
+          <div class="flex gap-3 mt-4">
+            <a href="all_imp_PART/Retail_analysi.pbix" download class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-download"></i> Download PBIX</a>
+            <button onclick="alert('Replace the iframe src with your Power BI embed link for inline view.')" class="px-3 py-2 border rounded-lg text-sm">How to embed?</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-sm text-slate-500">Tip: click dashboard images to zoom — use the download button for the PBIX file.</div>
+    </div>
+  </section>
+
+  <!-- REPORT -->
+  <section id="report" class="bg-slate-50 py-16" data-aos="fade-up">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-2xl font-bold mb-4">Report</h2>
+      <p class="text-sm text-slate-600 mb-4">Full report embedded below — scroll and read without downloading. Or download the PDF to keep.</p>
+
+      <div class="bg-white rounded-xl shadow overflow-hidden">
+        <iframe src="all_imp_PART/Retail_SQL_Report_Vishal.pdf" class="w-full h-[700px]" aria-label="Project PDF Report"></iframe>
+      </div>
+
+      <div class="mt-4">
+        <a href="all_imp_PART/Retail_SQL_Report_Vishal.pdf" download class="px-4 py-2 bg-indigo-600 text-white rounded-lg"><i class="fa-solid fa-download"></i> Download Report (PDF)</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section id="insights" class="py-16" data-aos="fade-up">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-2xl font-bold mb-6">Insights & Recommendations</h2>
+
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-xl text-center transform transition hover:-translate-y-3" data-aos="flip-left">
+          <div class="text-4xl mb-3">🛒</div>
+          <h3 class="font-semibold mb-2">Slow-moving Products</h3>
+          <p class="text-sm text-slate-500">Flag SKUs with < 2 units sold in last 90 days for discounting or bundling.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl text-center transform transition hover:-translate-y-3" data-aos="flip-left" data-aos-delay="80">
+          <div class="text-4xl mb-3">📦</div>
+          <h3 class="font-semibold mb-2">Overstocked Items</h3>
+          <p class="text-sm text-slate-500">Identify and reduce reorder quantity; run promotions to free capital.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl text-center transform transition hover:-translate-y-3" data-aos="flip-left" data-aos-delay="160">
+          <div class="text-4xl mb-3">💰</div>
+          <h3 class="font-semibold mb-2">High-margin Categories</h3>
+          <p class="text-sm text-slate-500">Focus promotions on high-margin categories to lift profitability.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl text-center transform transition hover:-translate-y-3" data-aos="flip-left" data-aos-delay="240">
+          <div class="text-4xl mb-3">⏳</div>
+          <h3 class="font-semibold mb-2">Seasonal Demand</h3>
+          <p class="text-sm text-slate-500">Shift inventory earlier for seasonal peaks; reduce stock for off-season SKUs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD CENTER -->
+  <section id="downloads" class="bg-slate-100 py-16" data-aos="fade-up">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-2xl font-bold mb-6">Download Center</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-xl file-card">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-semibold">SuperStore_raw_data.csv</h3>
+              <p class="text-sm text-slate-500">Transactional dataset (open in browser + download)</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="openCsvModal('all_imp_PART/SuperStore_raw_data.csv')" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-eye"></i> Preview</button>
+              <a href="all_imp_PART/SuperStore_raw_data.csv" download class="px-3 py-2 border rounded-lg text-sm"><i class="fa-solid fa-download"></i> Download</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl file-card">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-semibold">retail_analysis_queries.sql</h3>
+              <p class="text-sm text-slate-500">All analysis queries used (.sql)</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="openSqlModal('all_imp_PART/retail_analysis_queries.sql')" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-eye"></i> Preview</button>
+              <a href="all_imp_PART/retail_analysis_queries.sql" download class="px-3 py-2 border rounded-lg text-sm"><i class="fa-solid fa-download"></i> Download</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl file-card">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-semibold">Retail_SQL_Report_Vishal.pdf</h3>
+              <p class="text-sm text-slate-500">Final report (PDF)</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="openPdfModal('all_imp_PART/Retail_SQL_Report_Vishal.pdf')" class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm"><i class="fa-solid fa-eye"></i> Preview</button>
+              <a href="all_imp_PART/Retail_SQL_Report_Vishal.pdf" download class="px-3 py-2 border rounded-lg text-sm"><i class="fa-solid fa-download"></i> Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <footer id="contact" class="bg-slate-900 text-white py-10" data-aos="fade-up">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <h3 class="text-xl font-semibold">Vishal Kumar</h3>
+          <p class="text-sm text-slate-300">BBA Student — Retail Analysis Project</p>
+          <div class="mt-4 flex gap-3">
+            <a href="mailto:vishalnfskumar@gmail.com" class="px-4 py-2 bg-indigo-600 rounded-md text-sm"><i class="fa-solid fa-envelope"></i> Email</a>
+            <a href="https://github.com/vishalnfskumar" target="_blank" class="px-4 py-2 bg-slate-700 rounded-md text-sm"><i class="fa-brands fa-github"></i> GitHub</a>
+            <a href="https://www.linkedin.com/" target="_blank" class="px-4 py-2 bg-slate-700 rounded-md text-sm"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+          </div>
+        </div>
+
+        <div class="text-sm text-slate-400">
+          <p>Hosted files (for viewing & downloading) — make sure `all_imp_PART` folder exists with images and files.</p>
+          <p class="mt-3">&copy; <span id="year"></span> Vishal Kumar. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top -->
+  <button id="backTop" class="fixed bottom-6 right-6 bg-indigo-600 text-white p-3 rounded-full shadow-lg hidden" title="Back to top">
+    <i class="fa-solid fa-chevron-up"></i>
+  </button>
+
+  <!-- PREVIEW MODAL (generic) -->
+  <div id="previewModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="modal-backdrop absolute inset-0"></div>
+    <div class="relative z-50 max-w-[95%] max-h-[90%] bg-white rounded-xl overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between px-4 py-3 border-b">
+        <div id="modalTitle" class="font-semibold">Preview</div>
+        <div>
+          <button id="modalClose" class="px-3 py-2 rounded text-sm hover:bg-slate-100"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+
+      <div id="modalBody" class="p-4 overflow-auto" style="max-height: calc(90vh - 80px);">
+        <!-- dynamic content injected here -->
+        <div id="modalContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // ========== Init libs ==========
+    AOS.init({ once: true, duration: 650 });
+    gsap.from("#heroTitle", { y: 30, opacity: 0, duration: 1, ease: "power3.out" });
+    gsap.from("#heroSub", { y: 10, opacity: 0, delay: 0.2, duration: 1 });
+
+    // year in footer
+    document.getElementById('year').innerText = new Date().getFullYear();
+
+    // NAVBAR mobile toggle
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileToggle?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // Smooth scroll offset accounting for fixed nav
+    const navHeight = 72;
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (!href || href === '#') return;
+        const target = document.querySelector(href);
+        if (target) {
+          e.preventDefault();
+          const top = target.getBoundingClientRect().top + window.pageYOffset - navHeight + 4;
+          window.scrollTo({ top, behavior: 'smooth' });
+          // close mobile menu
+          if (!mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
+        }
+      });
+    });
+
+    // Active nav highlight via IntersectionObserver
+    const sections = document.querySelectorAll('section[id], header');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const obsOptions = { root: null, rootMargin: '0px 0px -60% 0px', threshold: 0 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id;
+        if (!id) return;
+        const link = [...navLinks].find(a => a.getAttribute('href') === '#' + id);
+        if (entry.isIntersecting) {
+          navLinks.forEach(n => n.classList.remove('nav-link-active'));
+          link?.classList.add('nav-link-active');
+        }
+      });
+    }, obsOptions);
+    sections.forEach(s => observer.observe(s));
+
+    // Back to Top visibility
+    const backTop = document.getElementById('backTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 500) backTop.classList.remove('hidden'); else backTop.classList.add('hidden');
+    });
+    backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Modal helpers
+    const previewModal = document.getElementById('previewModal');
+    const modalContent = document.getElementById('modalContent');
+    const modalTitle = document.getElementById('modalTitle');
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    function openModal(title) {
+      modalTitle.innerText = title || 'Preview';
+      previewModal.classList.remove('hidden');
+      previewModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      previewModal.classList.add('hidden');
+      previewModal.classList.remove('flex');
+      modalContent.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+    // close on ESC
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // CSV preview using PapaParse + DataTables
+    let csvTableInstance = null;
+    async function openCsvModal(csvPath) {
+      modalContent.innerHTML = '<div class="text-sm text-slate-500">Loading CSV…</div>';
+      openModal('CSV Preview');
+
+      // parse CSV
+      Papa.parse(csvPath, {
+        download: true,
+        header: true,
+        dynamicTyping: false,
+        preview: 50000,
+        complete: function(results) {
+          const rows = results.data.filter(r => Object.keys(r).length > 0);
+          if (rows.length === 0) {
+            modalContent.innerHTML = '<div class="text-sm text-red-500">No data found or path incorrect.</div>';
+            return;
+          }
+
+          // build table element
+          modalContent.innerHTML = '<div class="overflow-auto"><table id="modalCsvTable" class="display" style="width:100%"></table></div>';
+          const fields = results.meta.fields || Object.keys(rows[0]);
+          const columns = fields.map(f => ({ title: f, data: f }));
+
+          // destroy previous
+          if ($.fn.DataTable.isDataTable('#modalCsvTable')) {
+            $('#modalCsvTable').DataTable().clear().destroy();
+            $('#modalCsvTable').empty();
+          }
+
+          // initialise DataTable
+          csvTableInstance = $('#modalCsvTable').DataTable({
+            data: rows,
+            columns: columns,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            deferRender: true,
+            scrollX: true
+          });
+        },
+        error: function(err) {
+          modalContent.innerHTML = '<div class="text-sm text-red-500">Failed to load CSV. Check file path and CORS (if hosted locally open via server).</div>';
+        }
+      });
+    }
+
+    // small mini preview on the Data & SQL card (first 6 rows)
+    (function loadMiniCsvPreview() {
+      const mini = document.getElementById('csvPreviewMini');
+      Papa.parse('all_imp_PART/SuperStore_raw_data.csv', {
+        download: true,
+        header: true,
+        preview: 6,
+        complete: function(r) {
+          if (!r || !r.data || r.data.length === 0) { mini.innerHTML = '<div class="text-sm text-slate-400">No preview available</div>'; return; }
+          const keys = r.meta.fields;
+          let html = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr>';
+          keys.slice(0,6).forEach(k => html += `<th class="text-left px-2 py-1 text-slate-500">${k}</th>`);
+          html += '</tr></thead><tbody>';
+          r.data.forEach(row => {
+            html += '<tr>';
+            keys.slice(0,6).forEach(k => html += `<td class="px-2 py-1">${(row[k]!==undefined? String(row[k]).slice(0,60) : '')}</td>`);
+            html += '</tr>';
+          });
+          html += '</tbody></table></div>';
+          mini.innerHTML = html;
+        },
+        error: () => mini.innerHTML = '<div class="text-sm text-red-500">Failed to load preview</div>'
+      });
+    })();
+
+    // SQL preview (fetch + Prism highlight)
+    async function openSqlModal(sqlPath) {
+      modalContent.innerHTML = '<div class="text-sm text-slate-500">Loading SQL…</div>';
+      openModal('SQL Preview');
+      try {
+        const res = await fetch(sqlPath);
+        if (!res.ok) { throw new Error('Fetch failed'); }
+        const text = await res.text();
+        modalContent.innerHTML = `<pre class="language-sql"><code id="modalSqlCode" class="language-sql"></code></pre>`;
+        const codeEl = document.getElementById('modalSqlCode');
+        codeEl.textContent = text;
+        Prism.highlightElement(codeEl);
+      } catch (err) {
+        modalContent.innerHTML = '<div class="text-sm text-red-500">Cannot fetch SQL file. When testing locally, serve via local HTTP server or use GitHub Pages.</div>';
+      }
+    }
+
+    // PDF preview (iframe inside modal)
+    function openPdfModal(pdfPath) {
+      modalContent.innerHTML = `<div style="height:80vh"><iframe src="${pdfPath}" class="w-full h-full" aria-label="PDF Preview"></iframe></div>`;
+      openModal('PDF Preview');
+    }
+
+    // open image example (lightbox handles zoom)
+    // Lightbox automatically manages the zoom when clicking gallery images (no custom JS needed).
+
+    // quick fetch to display KPIs (optional): attempts to compute simple KPIs from CSV if available
+    async function computeSimpleKpis(csvPath) {
+      try {
+        const res = await fetch(csvPath);
+        if (!res.ok) return;
+        const text = await res.text();
+        const parsed = Papa.parse(text, { header: true, dynamicTyping: true });
+        const rows = parsed.data.filter(r => r && Object.keys(r).length > 0);
+
+        let totalSales = 0, totalProfit = 0, countOrders = new Set();
+        rows.forEach(r => {
+          const s = parseFloat(r['Sales'] ?? r['sales'] ?? 0) || 0;
+          const p = parseFloat(r['Profit'] ?? r['profit'] ?? 0) || 0;
+          const oid = r['OrderID'] ?? r['order_id'] ?? r['Order Id'] ?? null;
+          totalSales += s; totalProfit += p;
+          if (oid) countOrders.add(oid);
+        });
+
+        document.getElementById('kpiSales').innerText = totalSales ? '₹' + Number(totalSales).toLocaleString() : '—';
+        document.getElementById('kpiProfit').innerText = totalProfit ? '₹' + Number(totalProfit).toLocaleString() : '—';
+        document.getElementById('kpiMargin').innerText = (totalSales ? ((totalProfit / totalSales) * 100).toFixed(2) + ' %' : '—');
+      } catch (e) {
+        // ignore silently if CSV not accessible
+      }
+    }
+    // try compute kpis (best when hosted)
+    computeSimpleKpis('all_imp_PART/SuperStore_raw_data.csv');
+
+    // Helpful note: when previewing locally (file://) some browsers block fetch for local files.
+    // Use `npx http-server` or GitHub Pages to host the site and enable previews.
+
+  </script>
+</body>
+</html>
